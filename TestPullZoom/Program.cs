@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using PullZoom.Api;
+using PullZoom.Structures;
 
 namespace TestPullZoom; 
 
@@ -13,8 +14,17 @@ internal static class Program {
             Environment.GetEnvironmentVariable("ZOOM_SEC")
         ));
 
-        await foreach (var phoneNumber in api.StreamPhoneNumbers()) {
-            Console.WriteLine(phoneNumber);
+        CallLogEntry e = null;
+        await foreach (var logEntry in api.StreamCallHistory()) {
+            e = logEntry;
+            break;
         }
+
+        if (e == null) {
+            return;
+        }
+
+        var path = await api.GetCallPath(e);
+        Console.WriteLine(path);
     }
 }

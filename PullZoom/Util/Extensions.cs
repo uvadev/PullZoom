@@ -219,6 +219,12 @@ internal static class Extensions {
         var s = JsonConvert.SerializeObject(dateTime);
         return s.Substring(1, s.Length - 2);
     }
+    
+    [Pure]
+    public static string ToIso8601DateWithoutTime(this DateTime dateTime) {
+        var s = JsonConvert.SerializeObject(dateTime);
+        return s[1..s.IndexOf('T')];
+    }
 
     [Pure]
     public static long ToUnixTime(this DateTime dateTime) {
@@ -243,13 +249,13 @@ internal static class Extensions {
         return responseContentJson.ToObject<TElement>();
     }
 
-    internal static async IAsyncEnumerable<TElement> StreamDeserializeListPaginated<TElement>(Func<PaginationParams, Task<HttpResponseMessage>> requestFunc,
+    internal static async IAsyncEnumerable<TElement> StreamDeserializeListPaginated<TElement>(Func<PaginationArgs, Task<HttpResponseMessage>> requestFunc,
                                                                                               string dataKey,
                                                                                               uint pageSize = 300) {
         string pageToken = null;
         
         for (;;) {
-            var response = await requestFunc(new PaginationParams(pageToken, pageSize));
+            var response = await requestFunc(new PaginationArgs(pageToken, pageSize));
             response.AssertSuccess();
             var responseContent = await response.Content.ReadAsStringAsync();
             var responseContentJson = JToken.Parse(responseContent);
@@ -285,16 +291,16 @@ internal static class Extensions {
         }
     }
     
-    internal readonly struct PaginationParams {
+    internal readonly struct PaginationArgs {
         private readonly string nextPageToken;
         private readonly uint pageSize;
         
-        public PaginationParams(string nextPageToken, uint pageSize) {
+        public PaginationArgs(string nextPageToken, uint pageSize) {
             this.nextPageToken = nextPageToken;
             this.pageSize = pageSize;
         }
 
-        public PaginationParams(uint pageSize) {
+        public PaginationArgs(uint pageSize) {
             nextPageToken = null;
             this.pageSize = pageSize;
         }

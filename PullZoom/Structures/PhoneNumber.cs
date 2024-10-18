@@ -40,7 +40,7 @@ public class PhoneNumber : ZoomStructure {
     public string Number { get; init; }
 
     [JsonProperty("number_type")]
-    public NumberType NumberType { get; init; }
+    public TollType NumberType { get; init; }
 
     [CanBeNull]
     [JsonProperty("sip_group")]
@@ -139,8 +139,8 @@ public enum EmergencyAddressStatus {
 }
 
 [PublicAPI]
-[JsonConverter(typeof(ZoomApiEnumConverter<NumberType>))]
-public enum NumberType {
+[JsonConverter(typeof(ZoomApiEnumConverter<TollType>))]
+public enum TollType {
     [ZoomApiRepresentation("toll")]
     Toll,
     // ReSharper disable once StringLiteralTypo
@@ -182,4 +182,17 @@ public enum PhoneNumberStatus {
     Pending,
     [ZoomApiRepresentation("available")]
     Available
+}
+
+[PublicAPI]
+[JsonConverter(typeof(ZoomApiEnumConverter<PhoneNumberAssignmentStatus>))]
+public enum PhoneNumberAssignmentStatus {
+    [ZoomApiRepresentation("pending")]
+    Assigned,
+    [ZoomApiRepresentation("unassigned")]
+    Unassigned,
+    [ZoomApiRepresentation("byoc")]
+    Byoc,
+    [ZoomApiRepresentation("all")]
+    All
 }

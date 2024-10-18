@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 using PullZoom.Util;
 
@@ -17,9 +18,22 @@ public abstract class ZoomStructure {
             if (i > 0) {
                 sb.Append(",");
             }
+
+            var propertyValue = property.GetValue(this);
+            var propertyValueType = propertyValue?.GetType();
+            string propertyValueStr;
+
+            if (propertyValue == null) {
+                propertyValueStr = "null";
+            } else if (typeof(IEnumerable<object>).IsAssignableFrom(propertyValueType)) {
+                var list = (IEnumerable<object>) propertyValue;
+                propertyValueStr = "[" + string.Join(", ", list) + "]";
+            } else {
+                propertyValueStr = propertyValue.ToString();
+            }
             
             sb.Append("\n")
-              .Append($"{property.Name}: {property.GetValue(this)?.ToString() ?? "null"}".Indent(4));
+              .Append($"{property.Name}: {propertyValueStr}".Indent(4));
         }
 
         sb.Append("\n}");
