@@ -111,6 +111,11 @@ internal static class Extensions {
 
         return sb.ToString();
     }
+    
+    [Pure]
+    internal static object GetOrdinal([NotNull] this Enum en) {
+        return Convert.ChangeType(en, en.GetTypeCode());
+    }
 
     [CanBeNull]
     [Pure]

@@ -13,6 +13,12 @@ internal static class Program {
             Environment.GetEnvironmentVariable("ZOOM_CLI"),
             Environment.GetEnvironmentVariable("ZOOM_SEC")
         ));
+        
+        Console.WriteLine(api.GetScope());
+
+        await foreach (var user in api.StreamPhoneUsers()) {
+            Console.WriteLine(user);
+        }
 
         CallLogEntry e = null;
         await foreach (var logEntry in api.StreamCallHistory()) {
