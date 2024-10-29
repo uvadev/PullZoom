@@ -91,4 +91,45 @@ public partial class ZoomApi {
         [ZoomApiRepresentation("end_time")]
         EndTime
     }
+
+    public async IAsyncEnumerable<UserCallLogEntry> StreamUserCallLogs(string userId,
+                                                                       DateTime? from = null,
+                                                                       DateTime? to = null,
+                                                                       AllOrMissed? type = null,
+                                                                       string phoneNumber = null,
+                                                                       TimeType? timeType = null) {
+        var baseArgs = new List<(string, string)> {
+            ("from", from?.ToIso8601DateWithoutTime()),
+            ("to", to?.ToIso8601DateWithoutTime()),
+            ("type", type?.GetApiRepresentation()),
+            ("phone_number", phoneNumber),
+            ("time_type", timeType?.GetApiRepresentation())
+        }.AsReadOnly();
+        
+        var requestFunc = async (PaginationArgs p) => {
+            var args = p.AsArgs();
+            args.AddRange(baseArgs);
+            return await client.GetAsync($"phone/users/{userId}/call_logs" + BuildDuplicateKeyQueryString(args.ToArray()));
+        };
+        
+        await foreach (var logEntry in StreamDeserializeListPaginated<UserCallLogEntry>(requestFunc, "call_logs")) {
+            yield return logEntry;
+        }
+    }
+    
+    [PublicAPI]
+    public enum UserCallTimeType {
+        [ZoomApiRepresentation("startTime")]
+        StartTime,
+        [ZoomApiRepresentation("endTime")]
+        EndTime
+    }
+    
+    [PublicAPI]
+    public enum AllOrMissed {
+        [ZoomApiRepresentation("all")]
+        All,
+        [ZoomApiRepresentation("missed")]
+        Missed
+    }
 }
