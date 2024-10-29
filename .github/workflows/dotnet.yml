@@ -24,11 +24,11 @@ jobs:
       run: nuget restore PullZoom.sln
     - name: Compile Package
       working-directory: PullZoom
-      run: nuget pack PullZoom.csproj -Build -Properties Configuration=Release -Properties BuildVersion=$(date "+%s")
+      run: dotnet pack PullZoom.csproj -c Release
     - uses: actions/upload-artifact@v3
       with:
         name: uvaPullZoom
-        path: PullZoom/PullZoom*.nupkg
+        path: PullZoom/bin/Release/PullZoom*.nupkg
   build-docs:
  
    runs-on: ubuntu-latest
