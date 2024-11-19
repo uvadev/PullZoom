@@ -282,5 +282,7 @@ public enum UserCallResult {
     [ZoomApiRepresentation("Recorded")]
     Recorded,
     [ZoomApiRepresentation("Auto Recorded")]
-    AutoRecorded
+    AutoRecorded,
+    [ZoomApiRepresentation(" ")]
+    Blank
 }
